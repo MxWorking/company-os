@@ -7,7 +7,7 @@ export const demo:Dashboard = {
  activities:[{id:1,title:'سند پروژه جدید ایجاد شد',detail:'توسط محمد احمدی',time:'۱۰:۳۰',icon:'file'},{id:2,title:'وظیفه به‌روزرسانی شد',detail:'توسط سارا احمدی',time:'۰۹:۱۵',icon:'check'},{id:3,title:'نظر جدیدی ثبت شد',detail:'توسط علی رضایی',time:'دیروز',icon:'chat'},{id:4,title:'فایل جدید بارگذاری شد',detail:'توسط مریم کریمی',time:'دیروز',icon:'file'}],
  expenses:[{id:1,title:'سرویس‌های ابری',amount:150000000,category:'زیرساخت',paid_at:'۱۴۰۴/۰۶/۰۵'},{id:2,title:'حقوق تیم محصول',amount:210000000,category:'پرسنل',paid_at:'۱۴۰۴/۰۶/۰۲'},{id:3,title:'مجوز نرم‌افزار',amount:90000000,category:'تجهیزات',paid_at:'۱۴۰۴/۰۶/۰۱'}]
 };
-export const moduleFixtures:Record<ModuleKey,ModuleItem[]>={
+export const moduleFixtures:Partial<Record<ModuleKey,ModuleItem[]>>={
  dashboard:[],projects:[],tasks:[],
  documents:[{id:1,module:'documents',title:'قرارداد توسعه سامانه مشتریان',subtitle:'PDF · واحد حقوقی',status:'در انتظار امضا'},{id:2,module:'documents',title:'صورت‌جلسه کمیته محصول',subtitle:'DOCX · دبیرخانه',status:'نهایی شده'},{id:3,module:'documents',title:'راهنمای هویت بصری',subtitle:'PDF · طراحی',status:'منتشر شده'}],
  finance:[{id:1,module:'finance',title:'گزارش عملکرد مالی شهریور',subtitle:'گزارش ماهانه',status:'تأیید شده',amount:450000000}],
