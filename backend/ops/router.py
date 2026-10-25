@@ -59,22 +59,38 @@ def seed_workspace(db:Session):
     existing_owner=db.scalar(select(Account).join(Membership,Membership.account_id==Account.id).where(
         Membership.organization_id==org.id,Membership.role=='owner').order_by(Membership.id))
     if existing_owner:
-        # Changing .env must not silently create a second privileged account.
-        if not DEMO_MODE:
+        # Opt-in for hosted deployments where the owner explicitly manages credentials
+        # in server-side environment variables. Never create a second owner, and never
+        # modify staff, organizations, projects, or accounting records.
+        env_sync=os.environ.get('ADMIN_ENV_SYNC','false').strip().lower() in ('true','1','yes')
+        if env_sync and not DEMO_MODE:
+            from .bootstrap import validate_bootstrap_env, BootstrapConfigError
+            validate_bootstrap_env()
+            owners=db.scalars(select(Account).join(Membership,Membership.account_id==Account.id).where(
+                Membership.organization_id==org.id,Membership.role=='owner').order_by(Membership.id)).all()
+            if len(owners)!=1:
+                raise BootstrapConfigError('ADMIN_ENV_SYNC requires exactly one company-os owner; no account was modified.')
+            if existing_owner.username != username:
+                username_taken=db.scalar(select(Account.id).where(Account.username==username))
+                if username_taken is not None:
+                    raise BootstrapConfigError('ADMIN_USERNAME belongs to another account; owner sync refused without changes.')
+                existing_owner.username=username
+            if not verify_hash(os.environ['ADMIN_PASSWORD'],existing_owner.password_hash):
+                existing_owner.password_hash=make_hash(os.environ['ADMIN_PASSWORD'])
+            # Preserve the owner account ID, memberships, active flag and all tenant data.
+        elif not DEMO_MODE:
             import logging
             logger=logging.getLogger('companyos.bootstrap')
             if existing_owner.username != username:
                 logger.warning(
                     'ADMIN_USERNAME differs from the EXISTING owner account. Existing owner login remains active. '
-                    'Changing .env does not rename accounts or reset passwords; use the explicit admin reset command '
-                    'with --rename-to-configured if you intend to rename the account.'
+                    'To manage owner credentials automatically from server environment variables, set ADMIN_ENV_SYNC=true. '
+                    'Or use the explicit admin reset command.'
                 )
             elif not verify_hash(os.environ.get('ADMIN_PASSWORD',''),existing_owner.password_hash):
                 logger.warning(
-                    'ADMIN_PASSWORD in .env differs from the SAVED owner password hash. '
-                    'Changing .env does NOT rotate an existing password. '
-                    'To apply the new password WITHOUT deleting data, run: '
-                    'docker compose run --rm backend python -m ops.reset_admin --apply'
+                    'ADMIN_PASSWORD differs from the SAVED owner password hash. '
+                    'Set ADMIN_ENV_SYNC=true to opt into env-managed owner credentials, or explicitly reset the account.'
                 )
         db.commit()
     else:

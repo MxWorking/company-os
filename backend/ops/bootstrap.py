@@ -21,8 +21,7 @@ def validate_bootstrap_env(environ=None) -> None:
     if missing:
         raise BootstrapConfigError(
             'Missing required setting(s): '+', '.join(missing)+'. '
-            'Create .env in the SAME folder as docker-compose.yml (not frontend/ or backend/). '
-            'Run docker compose up -d --build --force-recreate.'
+            'For Docker, create .env alongside docker-compose.yml; for Vercel, add the values in the backend project Environment Variables and redeploy.'
         )
 
     username = env['ADMIN_USERNAME'].strip()
@@ -33,8 +32,8 @@ def validate_bootstrap_env(environ=None) -> None:
     if len(password) < 12 or password.upper().startswith(('REPLACE_', 'YOUR_OWN_', 'CHANGE_ME')):
         raise BootstrapConfigError(
             'ADMIN_PASSWORD is missing, still a placeholder, or too short (minimum: 12 characters). '
-            'Set a UNIQUE strong password in the root .env, then recreate the backend container. '
-            'Existing accounts are NOT reset by editing .env.'
+            'Set a UNIQUE strong password in the backend environment. '
+            'For opt-in automatic owner credential synchronization set ADMIN_ENV_SYNC=true; otherwise existing accounts are not reset.'
         )
     if len(secret) < 32 or secret.upper().startswith(('REPLACE_', 'YOUR_GENERATED_', 'CHANGE_ME')):
         raise BootstrapConfigError('SESSION_SECRET must contain 32+ random characters, not a placeholder. Generate with Python secrets.token_urlsafe(48).')
