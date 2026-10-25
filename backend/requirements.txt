@@ -1,2 +1,9 @@
-fastapi>=0.117.1,<1.0
-uvicorn>=0.34,<1.0
+fastapi>=0.115.12,<1
+uvicorn[standard]>=0.34,<1
+SQLAlchemy>=2.0.38,<3
+psycopg[binary]>=3.2,<4
+itsdangerous>=2.2,<3
+pydantic>=2.10,<3
+
+cryptography>=44,<50
+python-multipart>=0.0.20,<1
