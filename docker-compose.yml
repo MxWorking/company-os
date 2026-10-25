@@ -1,0 +1,52 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: company_os
+      POSTGRES_USER: company_os
+      POSTGRES_PASSWORD: local-dev-only
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U company_os"]
+      interval: 5s
+      timeout: 3s
+      retries: 12
+    volumes:
+      - companyos_db:/var/lib/postgresql/data
+  backend:
+    build: ./backend
+    env_file:
+      - .env
+    command: ["sh", "-c", "python -m ops.bootstrap && exec uvicorn main:app --host 0.0.0.0 --port 8000"]
+    environment:
+      APP_ENV: development
+      DEMO_MODE: "false"
+      ADMIN_USERNAME: ${ADMIN_USERNAME:?Set ADMIN_USERNAME}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:?Set ADMIN_PASSWORD}
+      DATABASE_URL: postgresql+psycopg://company_os:local-dev-only@db:5432/company_os
+      COMPANY_OS_KEY_PATH: /var/lib/companyos/internal.key
+    volumes:
+      - companyos_keys:/var/lib/companyos
+      ALLOWED_ORIGINS: http://localhost:3000
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=3).read()"]
+      interval: 5s
+      timeout: 4s
+      retries: 15
+      start_period: 15s
+    ports:
+      - "8000:8000"
+  frontend:
+    build: ./frontend
+    environment:
+      BACKEND_URL: http://backend:8000
+    depends_on:
+      backend:
+        condition: service_healthy
+    ports:
+      - "3000:3000"
+volumes:
+  companyos_db:
+  companyos_keys:
