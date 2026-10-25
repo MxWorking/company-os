@@ -1,3 +1,5 @@
+> **نسخه ۲.۶.۲ (Review):** ورود Owner با ENV ورسل (`ADMIN_ENV_SYNC=true`) و PostgreSQL پایدار. [راهنمای فارسی اتصال](docs/COMPANY-OS-2.6.2-VERCEL-POSTGRES-OWNER-ENV-FA.md). بدون دیتابیس پایدار، API روی Vercel اجرا نمی‌شود.
+
 > **نسخه ۲.۶ (بازبینی):** بازطراحی هماهنگ زیرمنوهای حسابداری، فرم‌های داده مرجع، صندوق/بانک، گردش‌ها و خروجی CSV. راهنما: [`docs/COMPANY-OS-2.6-ACCOUNTING-UI-AND-TOOLS-FA.md`](docs/COMPANY-OS-2.6-ACCOUNTING-UI-AND-TOOLS-FA.md). به‌معنای تکمیل همه فرآیندهای مالی نیست.
 
 # Company OS 2.5 | Accounting Operations Review

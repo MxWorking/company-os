@@ -1,3 +1,11 @@
+## 2.6.2 (Vercel PostgreSQL + ENV-managed Owner, Review)
+
+- Opt-in `ADMIN_ENV_SYNC=true` synchronizes a unique existing owner username/password from server environment variables without deleting organization data.
+- Rejects username collisions or multiple company-os owners. Existing explicit reset remains when disabled.
+- Uses SQLAlchemy NullPool on Vercel and disables psycopg prepared statements on port 6543 transaction-pooler connections.
+- 2 additional owner regression tests; 56 Python tests passed locally. Original frontend UI/UX and CSRF/RBAC remain unchanged.
+- Deployment guide: `docs/COMPANY-OS-2.6.2-VERCEL-POSTGRES-OWNER-ENV-FA.md`. Not production-certified.
+
 ## 2.6.0 (Review)
 
 - یکپارچه‌سازی کامپوننت گروه‌های حسابداری با Design Tokens، منوی اصلی و RTL/LTR.
