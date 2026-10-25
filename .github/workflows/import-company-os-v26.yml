@@ -58,8 +58,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          rsync -a --delete --exclude='.git/' --exclude='LICENSE' "$RUNNER_TEMP/company-os-import/company-os/" ./
-          rm -f .github/workflows/import-company-os-v26.yml
+          rsync -a --delete --exclude='.git/' --exclude='LICENSE' --exclude='.github/workflows/' "$RUNNER_TEMP/company-os-import/company-os/" ./
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -A
