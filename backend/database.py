@@ -26,7 +26,12 @@ elif URL.startswith("postgresql+psycopg://"):
     # Supabase transaction pooler (port 6543) rejects prepared statements.
     if make_url(URL).port == 6543:
         options["connect_args"] = {"prepare_threshold": None}
-engine = create_engine(URL, **options)
+# Vercel Supabase Marketplace includes a non-libpq 'supa' tracking parameter.
+# Strip only that unsupported field; preserve sslmode and all other options.
+engine_url = make_url(URL)
+if engine_url.drivername == "postgresql+psycopg" and "supa" in engine_url.query:
+    engine_url = engine_url.difference_update_query(["supa"])
+engine = create_engine(engine_url, **options)
 SessionLocal = sessionmaker(bind=engine, autoflush=False, expire_on_commit=False)
 
 
